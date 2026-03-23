@@ -386,7 +386,7 @@ export class ProcessManager {
    * Start a new SDK query with AsyncIterable prompt.
    * Returns true if successful.
    */
-  private async startQuery(): Promise<boolean> {
+  private startQuery(): boolean {
     // Clean up previous query
     this.closeQuery();
 
@@ -572,9 +572,8 @@ export class ProcessManager {
     if (this.activeQuery) return;
     if (workingDirectory) this.cwd = workingDirectory;
     // Start query but stay in idle state (not "running")
-    void this.startQuery().then(() => {
-      if (this._state === "running") this.setState("idle");
-    });
+    this.startQuery();
+    if (this._state === "running") this.setState("idle");
   }
 
   /**
@@ -599,11 +598,10 @@ export class ProcessManager {
     };
 
     if (!this.activeQuery) {
-      void this.startQuery().then((ok) => {
-        if (ok) {
-          this.channel?.enqueue(userMsg);
-        }
-      });
+      const ok = this.startQuery();
+      if (ok) {
+        this.channel?.enqueue(userMsg);
+      }
     } else {
       this.channel?.enqueue(userMsg);
     }

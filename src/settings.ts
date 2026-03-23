@@ -15,7 +15,7 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     // ── General ──
-    containerEl.createEl("h2", { text: "KatmerCode settings" });
+    new Setting(containerEl).setName("KatmerCode settings").setHeading();
 
     new Setting(containerEl)
       .setName("CLI path")
@@ -109,7 +109,7 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
       );
 
     // ── Skills ──
-    containerEl.createEl("h2", { text: "Academic skills" });
+    new Setting(containerEl).setName("Academic skills").setHeading();
     containerEl.createEl("p", {
       text: "Enable skills to add slash commands to Claude Code. Enabled skills are installed to ~/.claude/commands/ and available in all sessions.",
       cls: "setting-item-description",
@@ -128,7 +128,7 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
             new Notice(`${SKILL_CATALOG.length} skills enabled`);
           }
           await this.plugin.saveSettings();
-          await this.plugin.syncSkills();
+          this.plugin.syncSkills();
           this.display();
         })
       )
@@ -136,7 +136,7 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
         btn.setButtonText("Disable all").onClick(async () => {
           this.plugin.settings.enabledSkills = [];
           await this.plugin.saveSettings();
-          await this.plugin.syncSkills();
+          this.plugin.syncSkills();
           new Notice("All skills disabled");
           this.display();
         })
@@ -149,7 +149,7 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
       const skills = SKILL_CATALOG.filter(s => s.category === cat);
       const label = CATEGORY_LABELS[cat] || cat;
 
-      containerEl.createEl("h3", { text: label });
+      new Setting(containerEl).setName(label).setHeading();
 
       for (const skill of skills) {
         const enabled = this.plugin.settings.enabledSkills.includes(skill.id);
@@ -172,7 +172,7 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
                   this.plugin.settings.enabledSkills.filter(id => id !== skill.id);
               }
               await this.plugin.saveSettings();
-              await this.plugin.syncSkills();
+              this.plugin.syncSkills();
             })
           );
       }

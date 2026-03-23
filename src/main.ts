@@ -56,8 +56,8 @@ export default class ClaudeNativePlugin extends Plugin {
 
   async onload(): Promise<void> {
     await this.loadSettings();
-    await this.loadSkillContents();
-    await this.syncSkills();
+    this.loadSkillContents();
+    this.syncSkills();
 
     // Register the chat view
     this.registerView(VIEW_TYPE_CLAUDE, (leaf) => {
@@ -154,7 +154,7 @@ export default class ClaudeNativePlugin extends Plugin {
     this.app.workspace.revealLeaf(leaf);
   }
 
-  private async pickAndOpenReport(): Promise<void> {
+  private pickAndOpenReport(): void {
     const reportsDir = join(
       (this.app.vault.adapter as { basePath?: string }).basePath || "", "reports"
     );
@@ -191,7 +191,7 @@ export default class ClaudeNativePlugin extends Plugin {
         setTimeout(() => {
           const label = filename.replace(".html", "").replace(/-/g, " ");
           const notice = new Notice("", 0);
-          const el = notice.noticeEl;
+          const el = notice.messageEl;
           el.empty();
           el.addClass("katmer-report-notice");
           el.createEl("div", { cls: "katmer-report-notice-title", text: "Report ready" });
@@ -232,7 +232,7 @@ export default class ClaudeNativePlugin extends Plugin {
   }
 
   /** Load skill contents from bundled imports (no filesystem dependency) */
-  private async loadSkillContents(): Promise<void> {
+  private loadSkillContents(): void {
     for (const skill of SKILL_CATALOG) {
       const content = BUNDLED_SKILLS[skill.id];
       if (content) {
@@ -245,7 +245,7 @@ export default class ClaudeNativePlugin extends Plugin {
   }
 
   /** Sync enabled skills to ~/.claude/commands/ */
-  async syncSkills(): Promise<void> {
+  syncSkills(): void {
     try {
       // Ensure ~/.claude/commands/ exists
       if (!existsSync(SKILLS_DIR)) {
